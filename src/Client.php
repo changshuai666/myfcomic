@@ -54,6 +54,7 @@ class Client {
 
     /**
      * @var build
+     *  default 1:dingtalk
      */
     public function build(int $type = 1)
     {

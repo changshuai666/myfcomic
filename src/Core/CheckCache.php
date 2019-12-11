@@ -22,7 +22,12 @@ class CheckCache {
      * @var int
      *  cache time
      */
-    private $cache_time = 5; //min
+    private $cache_time = 5; // min
+
+    /**
+     * @var set_cache_time
+     */
+    private $set_cache_time = 86400;  // s
 
     /**
      * CheckCache constructor.
@@ -44,19 +49,19 @@ class CheckCache {
     public function check()
     {
         if (empty($this->cache_info)) {
-            Redis::setex($this->key, 86400, json_encode(['time' => time(), 'send_num' => 1]));
+            Redis::setex($this->key, $this->set_cache_time, json_encode(['time' => time(), 'send_num' => 1]));
 
             return ['status' => true, 'send_num' => 1];
         }
 
         if (((time() - $this->cache_info['time']) / 60) > $this->cache_time) {
 
-            Redis::setex($this->key, 86400, json_encode(['time' => time(), 'send_num' => $this->cache_info['send_num'] + 1]));
+            Redis::setex($this->key, $this->set_cache_time, json_encode(['time' => time(), 'send_num' => $this->cache_info['send_num'] + 1]));
 
             return ['status' => true, 'send_num' => $this->cache_info['send_num'] + 1];
         }
 
-        Redis::setex($this->key, 86400, json_encode(['time' => $this->cache_info['time'], 'send_num' => $this->cache_info['send_num'] + 1]));
+        Redis::setex($this->key, $this->set_cache_time, json_encode(['time' => $this->cache_info['time'], 'send_num' => $this->cache_info['send_num'] + 1]));
 
         return ['status' => false, 'send_num' => $this->cache_info['send_num'] + 1];
     }
