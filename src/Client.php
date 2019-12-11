@@ -1,10 +1,9 @@
 <?php
 namespace Myfcomic;
-
 use Elasticsearch\Transport;
 use Myfcomic\Core\Factory\DingTalk;
 
-class Client {
+class Client{
 
     /**
      * @var $host
