@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../myfcomic">
+      <sourceFolder url="file://$MODULE_DIR$/../myfcomic/src" isTestSource="false" packagePrefix="Myfcomic_sendmsg\Dingtalk\" />
+      <sourceFolder url="file://$MODULE_DIR$/../myfcomic/tests" isTestSource="true" packagePrefix="Myfcomic_sendmsg\Dingtalk\Tests\" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

@@ -1,17 +1,31 @@
 <?php
-
 namespace Myfcomic\Core\Factory;
 
+use Myfcomic\Core\CheckCache;
 use  Myfcomic\Core\SendMsg;
 use GuzzleHttp;
-use Illuminate\Support\Facades\Redis;
 
+/**
+ * Class DingTalk
+ * @package Myfcomic\Core\Factory
+ */
 class DingTalk implements SendMsg
 {
+    /**
+     * @var webhook url host
+     */
     public $host;
 
+    /**
+     * @var use_redis
+     */
     public $use_cache = true;
 
+    /**
+     * DingTalk constructor.
+     * @param $host
+     * @param bool $use_cache
+     */
     public function __construct($host, $use_cache = true)
     {
         $this->host = $host;
@@ -19,23 +33,24 @@ class DingTalk implements SendMsg
         $this->use_cache = $use_cache;
     }
 
-    public function send(array $body)
+    /**
+     * @param array $body
+     * @return array
+     */
+    public function send(array $body) :array
     {
-        if ($this->use_cache) {
-            $cache_num = Redis::get(md5($body['message']));
-            if (!empty($cache_num) && ((($cache_num + 1) % 10) != 0)) {
-                Redis::setex(md5($body['message']), 10, $cache_num + 1);
-
-                return ['status' => false, 'msg' => '连续发送操作失败'];
+        if ($this->use_redis) {
+            $cache = CheckCache::check();
+            if (!$cache['status']) {
+                return ['status' => false, 'msg' => '不能连续发送'];
             }
-
-            empty($cache_num) && $cache_num = 0;
-
-            Redis::setex(md5($body['message']), 10, $cache_num + 1);
         }
 
+        // format request data
+        $request_data = self::formatRequertData($body['project'], $body['title'], $body['message'], $cache['send_num']);
+
+        // send ding talk message
         $client = new \GuzzleHttp\Client();
-        $request_data = self::formatRequertData($body['project'], $body['title'], $body['message'] . ' 异常次数：' . ($cache_num + 1) . '次');
         $result = $client->post($this->host, [
             'headers' => [
                 'content-type' => 'application/json'
@@ -50,20 +65,22 @@ class DingTalk implements SendMsg
         return ['status' => true, 'msg' => '发送成功'];
     }
 
+
     /**
      * @param string $title
      * @param string $message
      * @return false|string
-     * 组装消息内容
+     * format request Data
      */
-    public static function formatRequertData(string $project, string $title, string $message)
+    public static function formatRequertData(string $project, string $title, string $message, int $num = 0)
     {
         $textString = json_encode([
             "actionCard" => [
-                "title"          => "$project-服务器异常报警",
+                "title"          => "$project-异常报警",
                 "text"           => "### $project-服务器异常报警
 #### 异常主题：" . $title . env("APP_ENV") . "
 ##### 触发时间：" . date("Y-m-d H:i:s", time()) . "
+##### 异常次数：" . $num . " 次" . "
 ##### 错误信息：" . $message,
                 "hideAvatar"     => "0",
                 "btnOrientation" => "0",
