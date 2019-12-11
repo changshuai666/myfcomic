@@ -39,8 +39,9 @@ class DingTalk implements SendMsg
      */
     public function send(array $body) :array
     {
-        if ($this->use_redis) {
-            $cache = CheckCache::check();
+        if ($this->use_cache) {
+            $object = new CheckCache($body);
+            $cache = $object->check();
             if (!$cache['status']) {
                 return ['status' => false, 'msg' => '不能连续发送'];
             }

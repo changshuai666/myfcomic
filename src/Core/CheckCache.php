@@ -11,7 +11,7 @@ class CheckCache {
     /**
      * @var cache_info array
      */
-    private $cache_info;
+    private $cache_info = [];
 
     /**
      * @var cache key string
@@ -22,7 +22,7 @@ class CheckCache {
      * @var int
      *  cache time
      */
-    private $cache_time = 5; // min
+    private $cache_time = 0.1; // min
 
     /**
      * @var set_cache_time
@@ -39,7 +39,7 @@ class CheckCache {
 
         $this->key = md5($body['message']);
 
-        !empty($this->cache_info) ? json_decode($this->cache_info, true) : [];
+        !empty($this->cache_info) && $this->cache_info = json_decode($this->cache_info, true);
     }
 
     /**

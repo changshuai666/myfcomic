@@ -26,7 +26,7 @@ class Client {
     /**
      * @return create
      */
-    public  function create()
+    public static function create()
     {
         return new static();
     }
@@ -60,7 +60,7 @@ class Client {
     {
         switch (intval($type)) {
             case 1:
-                return new DingTalk($this->host, $this->use_redis);
+                return new DingTalk($this->host, $this->use_cache);
             default:   // to do
                 return false;
         }
