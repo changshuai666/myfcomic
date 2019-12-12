@@ -1,4 +1,7 @@
 <?php
+/**
+ * Created by Changshuai.
+ */
 namespace Myfcomic\Core;
 use Illuminate\Support\Facades\Cache;
 
