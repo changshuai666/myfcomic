@@ -60,7 +60,7 @@ class DingTalk implements SendMsg
         ]);
 
         if (empty(json_decode($result->getBody()->getContents(), true)['errmsg']) || json_decode($result->getBody()->getContents(), true)['errcode'] != 0) {
-            return ['status' => false, 'msg' => '发送至钉钉失败'];
+            return ['status' => false, 'msg' => '发送失败'];
         }
 
         return ['status' => true, 'msg' => '发送成功'];
