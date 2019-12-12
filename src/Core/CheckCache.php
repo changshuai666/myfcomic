@@ -22,7 +22,7 @@ class CheckCache {
      * @var int
      *  cache time
      */
-    private $cache_time = 0.1; // min
+    private $cache_time = 5; // min
 
     /**
      * @var set_cache_time
@@ -56,12 +56,12 @@ class CheckCache {
 
         if (((time() - $this->cache_info['time']) / 60) > $this->cache_time) {
 
-            Cache::setex($this->key, json_encode(['time' => time(), 'send_num' => $this->cache_info['send_num'] + 1]), $this->set_cache_time);
+            Cache::put($this->key, json_encode(['time' => time(), 'send_num' => $this->cache_info['send_num'] + 1]), $this->set_cache_time);
 
             return ['status' => true, 'send_num' => $this->cache_info['send_num'] + 1];
         }
 
-        Cache::setex($this->key, json_encode(['time' => $this->cache_info['time'], 'send_num' => $this->cache_info['send_num'] + 1]), $this->set_cache_time);
+        Cache::put($this->key, json_encode(['time' => $this->cache_info['time'], 'send_num' => $this->cache_info['send_num'] + 1]), $this->set_cache_time);
 
         return ['status' => false, 'send_num' => $this->cache_info['send_num'] + 1];
     }
