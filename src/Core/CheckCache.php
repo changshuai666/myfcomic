@@ -1,6 +1,6 @@
 <?php
 namespace Myfcomic\Core;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class CheckCache
@@ -35,7 +35,7 @@ class CheckCache {
      */
     public function __construct(array $body)
     {
-        $this->cache_info = Redis::get(md5($body['message']));
+        $this->cache_info = Cache::get(md5($body['message']));
 
         $this->key = md5($body['message']);
 
@@ -49,19 +49,19 @@ class CheckCache {
     public function check()
     {
         if (empty($this->cache_info)) {
-            Redis::setex($this->key, $this->set_cache_time, json_encode(['time' => time(), 'send_num' => 1]));
+            Cache::put($this->key, json_encode(['time' => time(), 'send_num' => 1]), $this->set_cache_time);
 
             return ['status' => true, 'send_num' => 1];
         }
 
         if (((time() - $this->cache_info['time']) / 60) > $this->cache_time) {
 
-            Redis::setex($this->key, $this->set_cache_time, json_encode(['time' => time(), 'send_num' => $this->cache_info['send_num'] + 1]));
+            Cache::setex($this->key, json_encode(['time' => time(), 'send_num' => $this->cache_info['send_num'] + 1]), $this->set_cache_time);
 
             return ['status' => true, 'send_num' => $this->cache_info['send_num'] + 1];
         }
 
-        Redis::setex($this->key, $this->set_cache_time, json_encode(['time' => $this->cache_info['time'], 'send_num' => $this->cache_info['send_num'] + 1]));
+        Cache::setex($this->key, json_encode(['time' => $this->cache_info['time'], 'send_num' => $this->cache_info['send_num'] + 1]), $this->set_cache_time);
 
         return ['status' => false, 'send_num' => $this->cache_info['send_num'] + 1];
     }
