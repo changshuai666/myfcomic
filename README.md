@@ -4,7 +4,7 @@
 
 Demo:
 
-     $web_hook = "https://oapi.dingtalk.com";
+     $web_hook = " https://oapi.dingtalk.com";
 
         $message = [
             'project' => '漫番',
